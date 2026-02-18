@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — The Vault</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;600&family=Courier+Prime&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #050000;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cinzel', serif;
+    color: #fff;
+    padding: 2rem;
+  }
+  #loginScreen { width: 100%; max-width: 420px; }
+  #adminScreen { width: 100%; max-width: 700px; display: none; }
+  .box {
+    background: rgba(10,0,0,0.95);
+    border: 1px solid rgba(192,57,43,0.3);
+    border-radius: 6px;
+    padding: 2.5rem;
+    box-shadow: 0 0 40px rgba(192,57,43,0.1);
+  }
+  h1 { font-family: 'Cinzel Decorative', serif; color: #c0392b; font-size: 1.1rem; letter-spacing: 0.2em; margin-bottom: 0.4rem; text-align: center; }
+  .sub { color: rgba(240,192,64,0.4); font-size: 0.6rem; letter-spacing: 0.3em; text-align: center; margin-bottom: 2rem; text-transform: uppercase; }
+  input[type="password"] {
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(192,57,43,0.3);
+    border-radius: 3px;
+    color: #fff;
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.9rem;
+    padding: 0.7rem 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  input[type="password"]:focus { border-color: #c0392b; }
+  .btn {
+    width: 100%;
+    margin-top: 0.8rem;
+    background: linear-gradient(135deg,#6b0000,#c0392b);
+    border: none;
+    border-radius: 3px;
+    color: #fff;
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 0.7rem;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .btn:hover { background: linear-gradient(135deg,#8b0000,#e74c3c); }
+  .err { color: #e74c3c; font-size: 0.65rem; margin-top: 0.5rem; text-align: center; }
+  .admin-title { font-family: 'Cinzel Decorative', serif; color: #c0392b; text-align: center; font-size: 1rem; letter-spacing: 0.2em; margin-bottom: 0.3rem; }
+  .admin-sub { color: rgba(240,192,64,0.4); font-size: 0.55rem; letter-spacing: 0.3em; text-align: center; margin-bottom: 1.5rem; text-transform: uppercase; }
+  .status-bar {
+    border: 1px solid rgba(192,57,43,0.2);
+    border-radius: 3px;
+    padding: 0.6rem 1rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .all-btns { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+  .all-btns .btn { width: auto; flex: 1; padding: 0.5rem; font-size: 0.55rem; margin-top: 0; }
+  .btn-green { background: linear-gradient(135deg,#1a5c2a,#2ecc71) !important; }
+  .btn-green:hover { background: linear-gradient(135deg,#1e6b31,#27ae60) !important; }
+  .teams-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.5rem; }
+  .team-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(192,57,43,0.2);
+    border-radius: 4px;
+    padding: 1rem 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .team-card.granted { border-color: rgba(46,204,113,0.5); background: rgba(46,204,113,0.05); }
+  .team-name { font-size: 0.75rem; letter-spacing: 0.15em; color: #ddd; text-transform: uppercase; }
+  .team-pair { font-size: 0.5rem; color: rgba(240,192,64,0.4); margin-top: 0.2rem; }
+  .toggle-btn {
+    background: linear-gradient(135deg,#1a5c2a,#2ecc71);
+    border: none; border-radius: 2px; color: #fff;
+    font-family: 'Cinzel', serif; font-size: 0.55rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.35rem 0.8rem; cursor: pointer;
+    transition: all 0.3s;
+  }
+  .toggle-btn.revoke { background: linear-gradient(135deg,#6b0000,#c0392b); }
+  .status-badge { font-size: 0.5rem; letter-spacing: 0.15em; padding: 0.2rem 0.5rem; border-radius: 2px; text-transform: uppercase; margin-right: 0.4rem; }
+  .badge-granted { color: #2ecc71; }
+  .badge-denied { color: #e74c3c; }
+  hr { border: none; border-top: 1px solid rgba(192,57,43,0.15); margin: 1.2rem 0; }
+  .note { font-size: 0.6rem; color: rgba(255,255,255,0.3); text-align: center; letter-spacing: 0.08em; line-height: 1.8; }
+  .saving { color: rgba(240,192,64,0.6); font-size: 0.55rem; text-align: center; min-height: 1rem; letter-spacing: 0.1em; margin-top: 0.5rem; }
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="box">
+    <h1>Admin Access</h1>
+    <div class="sub">The Vault — Control Panel</div>
+    <input type="password" id="pwInput" placeholder="Enter admin password..." />
+    <button class="btn" onclick="login()">Enter</button>
+    <div class="err" id="loginErr"></div>
+  </div>
+</div>
+
+<div id="adminScreen">
+  <div class="box">
+    <div class="admin-title">Team Access Control</div>
+    <div class="admin-sub">Changes sync instantly across all devices</div>
+    <div class="status-bar" id="statusBar">Loading...</div>
+    <div class="all-btns">
+      <button class="btn btn-green" onclick="grantAll()">✓ Grant All</button>
+      <button class="btn" onclick="revokeAll()">✕ Revoke All</button>
+    </div>
+    <div class="teams-grid" id="teamsGrid"></div>
+    <div class="saving" id="savingMsg"></div>
+    <hr>
+    <div class="note">Changes are pushed to JSONBin and sync instantly to all devices.<br>Teams are denied by default until you grant them access.</div>
+  </div>
+</div>
+
+<script>
+  const ADMIN_PASSWORD = 'cisp1212';
+  const BIN_ID = '699594c1d0ea881f40c39831';
+  const API_KEY = '$2a$10$HVtQW0Gb5VNTb1vcKoPQYevVO.wsIZgcYVsHkfTtiYggPm1j8lHEq';
+
+  const TEAMS_LIST = [
+    { name: 'KARMORA', pair: 'Pair 1' },
+    { name: 'VASTANO', pair: 'Pair 1' },
+    { name: 'OMERTA', pair: 'Pair 2' },
+    { name: 'LA SIERRA', pair: 'Pair 2' },
+    { name: 'STRADANERA', pair: 'Pair 3' },
+    { name: 'KUROKAI', pair: 'Pair 3' },
+  ];
+
+  let approvedTeams = [];
+  let saving = false;
+
+  function login() {
+    if (document.getElementById('pwInput').value === ADMIN_PASSWORD) {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('adminScreen').style.display = 'block';
+      loadFromBin();
+    } else {
+      document.getElementById('loginErr').textContent = 'Incorrect password.';
+    }
+  }
+  document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+
+  async function loadFromBin() {
+    document.getElementById('statusBar').textContent = 'Syncing...';
+    try {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+        headers: { 'X-Master-Key': API_KEY }
+      });
+      const data = await res.json();
+      approvedTeams = (data.record.approved || []).map(t => t.toUpperCase());
+    } catch(e) {
+      approvedTeams = [];
+    }
+    renderGrid();
+    updateStatusBar();
+  }
+
+  async function saveToBin() {
+    if (saving) return;
+    saving = true;
+    document.getElementById('savingMsg').textContent = 'Saving...';
+    try {
+      await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': API_KEY
+        },
+        body: JSON.stringify({ approved: approvedTeams })
+      });
+      document.getElementById('savingMsg').textContent = '✓ Saved & synced!';
+      setTimeout(() => document.getElementById('savingMsg').textContent = '', 2000);
+    } catch(e) {
+      document.getElementById('savingMsg').textContent = '⚠ Save failed — check connection';
+    }
+    saving = false;
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById('teamsGrid');
+    grid.innerHTML = '';
+    TEAMS_LIST.forEach(team => {
+      const granted = approvedTeams.includes(team.name);
+      const card = document.createElement('div');
+      card.className = 'team-card ' + (granted ? 'granted' : '');
+      card.innerHTML = `
+        <div>
+          <div class="team-name">${team.name}</div>
+          <div class="team-pair">${team.pair}</div>
+        </div>
+        <div style="display:flex;align-items:center">
+          <span class="status-badge ${granted ? 'badge-granted' : 'badge-denied'}">${granted ? '✓ ON' : '✕ OFF'}</span>
+          <button class="toggle-btn ${granted ? 'revoke' : ''}" onclick="toggle('${team.name}')">
+            ${granted ? 'Revoke' : 'Grant'}
+          </button>
+        </div>`;
+      grid.appendChild(card);
+    });
+  }
+
+  function updateStatusBar() {
+    const bar = document.getElementById('statusBar');
+    if (approvedTeams.length === 0) {
+      bar.textContent = 'All teams: Access Denied';
+      bar.style.color = 'rgba(231,76,60,0.7)';
+    } else {
+      bar.textContent = 'Active: ' + approvedTeams.join(', ');
+      bar.style.color = 'rgba(46,204,113,0.7)';
+    }
+  }
+
+  function toggle(name) {
+    const idx = approvedTeams.indexOf(name);
+    if (idx === -1) approvedTeams.push(name);
+    else approvedTeams.splice(idx, 1);
+    renderGrid();
+    updateStatusBar();
+    saveToBin();
+  }
+
+  function grantAll() {
+    approvedTeams = TEAMS_LIST.map(t => t.name);
+    renderGrid(); updateStatusBar(); saveToBin();
+  }
+
+  function revokeAll() {
+    approvedTeams = [];
+    renderGrid(); updateStatusBar(); saveToBin();
+  }
+</script>
+</body>
+</html>
